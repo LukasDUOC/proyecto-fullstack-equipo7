@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "rating-client", url = "${rating.service.url}")
 public interface RatingClient {
 
-    @GetMapping("/api/ratings/{id}")
+    @GetMapping("/api/v1/ratings/{id}")
     RatingDTO getRating(@PathVariable("id") Long id);
 }

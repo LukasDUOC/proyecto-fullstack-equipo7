@@ -14,7 +14,7 @@ import cl.duoc.api_recomendaciones.service.RecomendacionService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/recomendaciones")
+@RequestMapping("/api/v1/recomendaciones")
 public class RecomendacionController {
 
     @Autowired
