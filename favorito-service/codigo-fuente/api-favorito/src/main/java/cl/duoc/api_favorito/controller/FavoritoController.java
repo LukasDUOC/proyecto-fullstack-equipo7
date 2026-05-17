@@ -13,7 +13,7 @@ import cl.duoc.api_favorito.service.FavoritoService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/favoritos")
+@RequestMapping("/api/v1/favoritos")
 public class FavoritoController {
 
      @Autowired
