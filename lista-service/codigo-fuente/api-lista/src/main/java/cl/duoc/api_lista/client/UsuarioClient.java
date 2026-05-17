@@ -8,6 +8,6 @@ import cl.duoc.api_lista.dto.UsuarioDTO;
 @FeignClient(name = "usuarios-client", url = "${usuarios.service.url}")
 public interface UsuarioClient {
 
-    @GetMapping("/api/usuarios/id/{id}")
+    @GetMapping("/api/v1/usuarios/id/{id}")
     UsuarioDTO getUsuario(@PathVariable("id") Long id);
 }
