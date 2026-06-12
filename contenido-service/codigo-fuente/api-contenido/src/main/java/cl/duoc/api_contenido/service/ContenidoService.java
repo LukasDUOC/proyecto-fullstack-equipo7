@@ -20,14 +20,14 @@ public class ContenidoService {
         private static final Logger log = LoggerFactory.getLogger(ContenidoService.class);
 
         @Autowired
-        private ContenidoRepository _contenidoRepository;
+        private ContenidoRepository contenidoRepository;
 
        
-        public ContenidoDTO findDtoById(Long id) {
+        public ContenidoDTO obtenerPorId(Long id) {
 
                 log.info("Buscando contenido por id={}", id);
 
-                Contenido c = _contenidoRepository.findById(id)
+                Contenido c = contenidoRepository.findById(id)
                                 .orElseThrow(() -> {
                                         log.warn("Contenido no encontrado id={}", id);
                                         return new RecursoNoEncontradoException(
@@ -36,15 +36,7 @@ public class ContenidoService {
 
                 log.info("Contenido encontrado id={} titulo={}", c.getId(), c.getTitulo());
 
-                return new ContenidoDTO(
-                                c.getId(),
-                                c.getTitulo(),
-                                c.getGenero(),
-                                c.getSinopsis(),
-                                c.getDuracion(),
-                                c.getTipo(),
-                                c.getVisualizar(),
-                                c.getFechaLan());
+                return toDTO(c);
         }
 
         // CREATE
@@ -53,7 +45,7 @@ public class ContenidoService {
                 log.info("Validando duplicidad de título: {}", dto.getTitulo());
 
                
-                if (_contenidoRepository.existsByTitulo(dto.getTitulo())) {
+                if (contenidoRepository.existsByTituloIgnoreCase(dto.getTitulo())) {
                         log.warn("Intento de crear contenido duplicado: {}", dto.getTitulo());
                        
                         throw new RuntimeException("Ya existe un contenido con el título: " + dto.getTitulo());
@@ -71,27 +63,21 @@ public class ContenidoService {
                 c.setVisualizar(dto.getVisualizar());
                 c.setFechaLan(dto.getFechaLan());
 
-                Contenido guardado = _contenidoRepository.save(c);
+                Contenido guardado = contenidoRepository.save(c);
 
-                log.info("Contenido creado exitosamente id={} titulo={}",
-                                guardado.getId(), guardado.getTitulo());
+                log.info("Contenido creado exitosamente id={}",
+                                guardado.getId());
 
-                return new ContenidoDTO(
-                                guardado.getId(),
-                                guardado.getTitulo(),
-                                guardado.getGenero(),
-                                guardado.getSinopsis(),
-                                guardado.getDuracion(),
-                                guardado.getTipo(),
-                                guardado.getVisualizar(),
-                                guardado.getFechaLan());
+                return toDTO(guardado);
         }
 
-        public ContenidoDTO update(Long id, ContenidoCreateDTO dto) {
+        // ACTUALIZAR
+
+        public ContenidoDTO actualizar(Long id, ContenidoCreateDTO dto) {
 
                 log.info("Actualizando contenido id={}", id);
 
-                Contenido c = _contenidoRepository.findById(id)
+                Contenido c = contenidoRepository.findById(id)
                                 .orElseThrow(() -> {
                                         log.warn("No se puede actualizar, contenido no existe id={}", id);
                                         return new RecursoNoEncontradoException(
@@ -107,73 +93,67 @@ public class ContenidoService {
                 c.setVisualizar(dto.getVisualizar());
                 c.setFechaLan(dto.getFechaLan());
 
-                Contenido actualizado = _contenidoRepository.save(c);
-
-                log.info("Contenido actualizado id={} titulo={}",
-                                actualizado.getId(), actualizado.getTitulo());
-
-                return new ContenidoDTO(
-                                actualizado.getId(),
-                                actualizado.getTitulo(),
-                                actualizado.getGenero(),
-                                actualizado.getSinopsis(),
-                                actualizado.getDuracion(),
-                                actualizado.getTipo(),
-                                actualizado.getVisualizar(),
-                                actualizado.getFechaLan());
+                return  toDTO(contenidoRepository.save(c));
         }
 
      
-        public void delete(Long id) {
+        public void eliminar (Long id) {
 
                 log.info("Eliminando contenido id={}", id);
 
-                Contenido c = _contenidoRepository.findById(id)
+                Contenido c = contenidoRepository.findById(id)
                                 .orElseThrow(() -> {
                                         log.warn("No se puede eliminar, contenido no existe id={}", id);
                                         return new RecursoNoEncontradoException(
                                                         "No se puede eliminar. Contenido no encontrado con ID: " + id);
                                 });
 
-                _contenidoRepository.delete(c);
+                contenidoRepository.delete(c);
 
-                log.info("Contenido eliminado id={} titulo={}", c.getId(), c.getTitulo());
+                log.info("Contenido eliminado id={} ", c.getId());
         }
 
       
-        public List<ContenidoDTO> findAllDto() {
+        public List<ContenidoDTO> obtenerTodos() {
 
                 log.info("Obteniendo todos los contenidos");
 
-                List<Contenido> lista = _contenidoRepository.findAll();
+                List<Contenido> lista = contenidoRepository.findAll();
 
                 log.info("Total contenidos encontrados={}", lista.size());
 
-                return lista.stream().map(c -> new ContenidoDTO(
-                                c.getId(),
-                                c.getTitulo(),
-                                c.getGenero(),
-                                c.getSinopsis(),
-                                c.getDuracion(),
-                                c.getTipo(),
-                                c.getVisualizar(),
-                                c.getFechaLan())).collect(Collectors.toList());
+                return lista.stream()
+                        .map(this::toDTO)
+                        .collect(Collectors.toList());
         }
 
         public List<ContenidoDTO> buscarPorTitulo(String titulo) {
                 log.info("Buscando contenidos que coincidan con: {}", titulo);
 
-                List<Contenido> resultados = _contenidoRepository.findByTituloContainingIgnoreCase(titulo);
+                List<Contenido> resultados = contenidoRepository.findByTituloContainingIgnoreCase(titulo);
 
           
-                return resultados.stream().map(c -> new ContenidoDTO(
-                                c.getId(),
-                                c.getTitulo(),
-                                c.getGenero(),
-                                c.getSinopsis(),
-                                c.getDuracion(),
-                                c.getTipo(),
-                                c.getVisualizar(),
-                                c.getFechaLan())).collect(Collectors.toList());
+                return resultados.stream()
+                        .map(this::toDTO)
+                        .collect(Collectors.toList());
+        }
+
+        private ContenidoDTO toDTO (Contenido c){
+                return new ContenidoDTO (
+                        c.getId(),
+                        c.getTitulo(),
+                        c.getGenero(),
+                        c.getSinopsis(),
+                        c.getDuracion(),
+                        c.getTipo(),
+                        c.getVisualizar(),
+                        c.getFechaLan()
+                        
+
+
+
+
+
+                );
         }
 }
