@@ -52,7 +52,7 @@ public class BusquedaService {
                             "No se encontró contenido con el título: " + dto.getTitulo());
                 }
 
-                // Tomamos el primer resultado para obtener el objeto completo
+                
                 contenido = resultados.get(0);
             } else {
                 throw new IllegalArgumentException("Debes enviar al menos el ID o el Título");
@@ -66,14 +66,14 @@ public class BusquedaService {
 
             log.info("Búsqueda registrada y retornando contenido completo: {}", contenido.getTitulo());
 
-            // Retorna el objeto completo (el que tiene género, sinopsis, etc.)
+            
             return contenido;
 
         } catch (FeignException.NotFound e) {
             log.error("Error 404: El contenido no existe en la API externa");
             throw new RecursoNoEncontradoException("Contenido no encontrado");
         } catch (FeignException e) {
-            log.error("Error 503: Falla de comunicación (Ver imagen image_cc5f03.png)");
+            log.error("Error 503: Falla de comunicación ");
             throw new ServicioNoDisponibleException("api-contenido no disponible");
         }
     }
@@ -112,7 +112,10 @@ public class BusquedaService {
     }
 
     private BusquedaDTO toDTO(Busqueda b) {
-        return new BusquedaDTO(b.getId(), b.getContenidoId(), b.getTitulo());
+        return new BusquedaDTO(
+                 b.getId(),
+                 b.getContenidoId(), 
+                 b.getTitulo());
     }
 
     public void eliminarBusquedaPorId(Long id) {
