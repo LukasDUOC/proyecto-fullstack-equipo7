@@ -21,5 +21,9 @@ public class UsuarioCreateDTO {
     @Email(message = "El email no tiene un formato válido")
     private String email;
 
+    @NotBlank(message = "La contraseña es obligatoria")
+    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
+    private String contrasena; 
+
     private boolean ingresar;
 }

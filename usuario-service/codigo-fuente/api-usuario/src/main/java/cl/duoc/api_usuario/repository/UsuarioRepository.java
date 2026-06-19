@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import cl.duoc.api_usuario.model.Usuario;
 
-
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 

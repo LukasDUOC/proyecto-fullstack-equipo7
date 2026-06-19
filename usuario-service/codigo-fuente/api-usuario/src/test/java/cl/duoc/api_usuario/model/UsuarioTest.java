@@ -1,4 +1,4 @@
-package cl.duoc.api_usuario.java.com.duoc.usuarios.model;
+package cl.duoc.api_usuario.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import cl.duoc.api_usuario.model.Usuario;
+
 
 public class UsuarioTest {
     @Test

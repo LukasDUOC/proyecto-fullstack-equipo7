@@ -14,13 +14,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.stream.Collectors;
 
+
+
+
 @Service
 public class UsuarioService {
-private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
+    private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
+    
     public List<UsuarioDTO> obtenerTodosLosUsuarios() {
         log.info("Consultando todos los usuarios");
 
@@ -57,6 +60,7 @@ private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
         Usuario u = new Usuario();
         u.setNombre(dto.getNombre());
         u.setEmail(dto.getEmail());
+        u.setContrasena(dto.getContrasena());
         u.setIngresar(dto.isIngresar());
 
         Usuario guardado = usuarioRepository.save(u);
@@ -83,5 +87,4 @@ private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
                 u.isIngresar()
         );
     }
-
 }
