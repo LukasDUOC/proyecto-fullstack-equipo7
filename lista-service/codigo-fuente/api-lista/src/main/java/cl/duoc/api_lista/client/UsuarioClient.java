@@ -9,5 +9,5 @@ import cl.duoc.api_lista.dto.UsuarioDTO;
 public interface UsuarioClient {
 
     @GetMapping("/api/v1/usuarios/id/{id}")
-    UsuarioDTO getUsuario(@PathVariable("id") Long id);
+    UsuarioDTO getById(@PathVariable("id") Long id);
 }

@@ -2,6 +2,7 @@ package cl.duoc.api_lista.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,18 +34,13 @@ public class ListaService {
     @Autowired
     private UsuarioClient usuarioClient;
 
-    // =========================
-    // CREAR LISTA
-    // =========================
     public Lista crear(ListaCreateDTO dto) {
 
         log.info("Creando lista | usuarioId={} | titulo={}",
                 dto.getUsuarioId(), dto.getTitulo());
 
-        // 1. Validar usuario
         validarUsuario(dto.getUsuarioId());
 
-        // 2. Validar contenidos (seguro contra null)
         List<Long> contenidos = Optional.ofNullable(dto.getContenidosId())
                 .orElseThrow(() -> new IllegalArgumentException("Debe enviar al menos un contenido"));
 
@@ -67,9 +63,23 @@ public class ListaService {
         return saved;
     }
 
-    // =========================
-    // OBTENER POR ID
-    // =========================
+    public List<ListaDTO> obtenerTodos() {
+        log.info("Obteniendo todas las listas");
+        List<Lista> listas = repository.findAll();
+        log.info("Total listas encontradas={}", listas.size());
+
+        return listas.stream()
+                .map(lista -> {
+                    List<ContenidoDTO> contenidos = Optional.ofNullable(lista.getContenidosId())
+                            .orElse(List.of())
+                            .stream()
+                            .map(this::obtenerContenidoSeguro)
+                            .toList();
+                    return mapToDTO(lista, contenidos);
+                })
+                .collect(Collectors.toList());
+    }
+
     public ListaDTO obtenerPorId(Long id) {
 
         log.info("Buscando lista por id={}", id);
@@ -86,9 +96,6 @@ public class ListaService {
         return mapToDTO(lista, contenidos);
     }
 
-    // =========================
-    // OBTENER POR USUARIO
-    // =========================
     public List<ListaDTO> obtenerPorUsuario(Long usuarioId) {
 
         log.info("Buscando listas por usuarioId={}", usuarioId);
@@ -106,18 +113,6 @@ public class ListaService {
                     return mapToDTO(lista, contenidos);
                 })
                 .toList();
-    }
-
-
-    private void validarUsuario(Long usuarioId) {
-        try {
-            usuarioClient.getUsuario(usuarioId);
-        } catch (FeignException.NotFound e) {
-            throw new RecursoNoEncontradoException("Usuario no existe: " + usuarioId);
-        } catch (FeignException e) {
-            log.error("Error comunicando con api-usuario", e);
-            throw new ServicioNoDisponibleException("api-usuario no disponible");
-        }
     }
 
     public ListaDTO eliminarContenidoDeLista(Long listaId, Long contenidoId) {
@@ -171,19 +166,16 @@ public class ListaService {
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "Lista no encontrada: " + listaId));
 
-       
         if (listaActualizada.getTitulo() != null && !listaActualizada.getTitulo().isBlank()) {
             lista.setTitulo(listaActualizada.getTitulo());
         }
 
-    
         if (listaActualizada.getContenidosId() != null) {
 
             if (listaActualizada.getContenidosId().isEmpty()) {
                 throw new IllegalArgumentException("La lista debe tener al menos un contenido");
             }
 
-           
             listaActualizada.getContenidosId()
                     .forEach(this::validarContenido);
 
@@ -202,10 +194,9 @@ public class ListaService {
         return mapToDTO(updated, contenidos);
     }
 
-
     private void validarContenido(Long contenidoId) {
         try {
-            contenidoClient.buscarPorId(contenidoId);
+            contenidoClient.findById(contenidoId);
         } catch (FeignException.NotFound e) {
             throw new RecursoNoEncontradoException("Contenido no existe: " + contenidoId);
         } catch (FeignException e) {
@@ -213,11 +204,10 @@ public class ListaService {
             throw new ServicioNoDisponibleException("api-contenido no disponible");
         }
     }
-
 
     private ContenidoDTO obtenerContenidoSeguro(Long contenidoId) {
         try {
-            return contenidoClient.buscarPorId(contenidoId);
+            return contenidoClient.findById(contenidoId);
         } catch (FeignException.NotFound e) {
             throw new RecursoNoEncontradoException("Contenido no existe: " + contenidoId);
         } catch (FeignException e) {
@@ -226,6 +216,16 @@ public class ListaService {
         }
     }
 
+    private void validarUsuario(Long usuarioId) {
+        try {
+            usuarioClient.getById(usuarioId);
+        } catch (FeignException.NotFound e) {
+            throw new RecursoNoEncontradoException("Usuario no existe: " + usuarioId);
+        } catch (FeignException e) {
+            log.error("Error comunicando con api-usuario", e);
+            throw new ServicioNoDisponibleException("api-usuario no disponible");
+        }
+    }
 
     private ListaDTO mapToDTO(Lista lista, List<ContenidoDTO> contenidos) {
         return new ListaDTO(
