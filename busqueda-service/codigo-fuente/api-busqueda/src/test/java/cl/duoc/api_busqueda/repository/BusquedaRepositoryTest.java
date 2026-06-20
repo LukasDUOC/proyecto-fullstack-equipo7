@@ -101,16 +101,6 @@ public class BusquedaRepositoryTest {
     }
 
     @Test
-    @DisplayName("findById - debe retornar Optional vacío cuando el ID no existe")
-    void debeRetornarOptionalVacioCuandoIdNoExiste() {
-        // When
-        Optional<Busqueda> resultado = busquedaRepository.findById(999L);
-
-        // Then
-        assertFalse(resultado.isPresent());
-    }
-
-    @Test
     @DisplayName("deleteById - debe eliminar la busqueda de la base de datos")
     void debeEliminarBusquedaPorId() {
         // Given

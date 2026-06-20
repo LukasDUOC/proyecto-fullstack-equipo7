@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
-@Tag(name = "Busqueda" , description = "Operaciones de gestion de Contenido")
+@Tag(name = "Busqueda" , description = "Operaciones de gestión e historial de búsquedas de contenido")
 @RestController
 @RequestMapping("/api/v1/busqueda")
 public class BusquedaController {
@@ -31,7 +31,7 @@ public class BusquedaController {
     // CREAR
     @Operation(summary = "Hacer una busqueda del Contenido")
     @ApiResponses({
-    @ApiResponse (responseCode = "201", description = "La busqueda ah si exitosa. "),
+    @ApiResponse (responseCode = "200", description = "La busqueda ah si exitosa. "),
     @ApiResponse (responseCode = "400", description = "Datos de entrada NO validos. ")
     })
    
@@ -50,8 +50,8 @@ public class BusquedaController {
     }
 
     // TODOS
-    @Operation(summary = "Listar todo los Contenidos", description = "Retorna la lista completa de los contenidos registrados en el sistema. ")
-    @ApiResponse (responseCode = "200", description = "Lista obtenida exitosamente. ")
+    @Operation(summary = "Listar todo el historial de busquedas", description = "Retorna la lista completa de los contenidos registrados en el sistema. ")
+    @ApiResponse (responseCode = "200", description = "Historial obtenido exitosamente. ")
     
     @GetMapping
     public ResponseEntity<List<BusquedaDTO>> findAll() {
@@ -62,10 +62,10 @@ public class BusquedaController {
     }
 
     //POR ID
-    @Operation(summary = "Buscar contenido por Id",description = "Retorna una Lista de los contenidos correspondiente al Id solicitado. ")
+    @Operation(summary = "Buscar contenido por Id",description = "Retorna un único registro del historial correspondiente al ID solicitado. ")
     @ApiResponses({
     @ApiResponse (responseCode = "200", description = "Contenido encontrado. "),
-    @ApiResponse (responseCode = "400", description = "Contenido NO encontrado. ")
+    @ApiResponse (responseCode = "404", description = "Contenido NO encontrado. ")
     })
     @GetMapping("/{id}")
     public ResponseEntity<BusquedaDTO> obtenerPorId(@Parameter(
@@ -77,11 +77,11 @@ public class BusquedaController {
         return ResponseEntity.ok(service.obtenerPorId(id));
     }
 
-    @Operation(summary = "Buscar Historial por termino",
-        description = "Retorna una Lista de el Historial que contiene ese Termino. ")
+    @Operation(summary = "Buscar Historial por termino de texto",
+        description = "Retorna una lista de registros del historial que coinciden con el término buscado.")
     @ApiResponses({
     @ApiResponse (responseCode = "200", description = "Historial encontrado. "),
-    @ApiResponse (responseCode = "400", description = "Historial NO encontrado. ")
+    @ApiResponse (responseCode = "404", description = "No se encontraron registros con ese término. ")
     })
     
     @GetMapping("/buscar/{termino}")
@@ -94,10 +94,10 @@ public class BusquedaController {
         return ResponseEntity.ok(service.buscarPorTexto(termino));
 
     }
-    @Operation(summary = "Eliminar el Historial por ID  ")
+    @Operation(summary = "Eliminar un registro del historial por ID  ")
     @ApiResponses({
     @ApiResponse(responseCode = "204", description = "Eliminación exitosa"),
-    @ApiResponse(responseCode = "404", description = "Contenido no encontrada")
+    @ApiResponse(responseCode = "404", description = "Registro de historial no encontrado")
     }) 
     @DeleteMapping("/historial/{id}")
     public ResponseEntity<Void> eliminarPorId(@Parameter(

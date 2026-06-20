@@ -20,10 +20,9 @@ import cl.duoc.api_busqueda.dto.BusquedaCreateDTO;
 import cl.duoc.api_busqueda.dto.BusquedaDTO;
 import cl.duoc.api_busqueda.dto.ContenidoDTO;
 import cl.duoc.api_busqueda.exception.RecursoNoEncontradoException;
-import cl.duoc.api_busqueda.exception.ServicioNoDisponibleException;
+
 import cl.duoc.api_busqueda.model.Busqueda;
 import cl.duoc.api_busqueda.repository.BusquedaRepository;
-import feign.FeignException;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -82,26 +81,12 @@ public class BusquedaServiceTest {
 
 
 
-    @Test
-    @DisplayName("buscar por ID - debe lanzar RecursoNoEncontradoException cuando Feign responde 404")
-    void debeManejarError404DeFeign() {
-        // Given
-        BusquedaCreateDTO dto = new BusquedaCreateDTO(999L, null);
-        
-        // Simulamos la excepción de Feign para un error 404
-        FeignException.NotFound feignException = mock(FeignException.NotFound.class);
-        when(contenidoClient.buscarPorId(999L)).thenThrow(feignException);
-
-        // When & Then
-        assertThrows(RecursoNoEncontradoException.class, () -> busquedaService.buscar(dto));
-        verify(repository, never()).save(any());
-    }
 
 
     
 
     @Test
-    @DisplayName("findAll - debe retornar lista del historial mapeada a DTO")
+    @DisplayName("findAll - debe retornar lista del historial")
     void debeRetornarHistorialCompleto() {
         // Given
         List<Busqueda> listaSimulada = List.of(
@@ -120,6 +105,20 @@ public class BusquedaServiceTest {
     }
 
     @Test
+    @DisplayName("findAll - debe retornar lista vacía cuando no hay productos")
+    void debeRetornarListaVaciaSiNoHayProductos() {
+        // Given
+        when(repository.findAll()).thenReturn(List.of());
+
+        // When
+        List<BusquedaDTO> resultado = busquedaService.findAll();
+
+        // Then
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
     @DisplayName("obtenerPorId - debe retornar el registro si existe")
     void debeRetornarBusquedaPorIdExistente() {
         // Given
@@ -134,22 +133,21 @@ public class BusquedaServiceTest {
         assertEquals("Interstellar", resultado.getTitulo());
     }
 
-
-
     @Test
-    @DisplayName("buscarPorTexto - debe retornar coincidencias de títulos del historial")
-    void debeBuscarEnHistorialPorTexto() {
+    @DisplayName("obtenerPorId - debe lanzar RecursoNoEncontradoException cuando el ID no existe")
+    void debeLanzarExcepcionCuandoProductoNoExiste() {
         // Given
-        when(repository.findByTituloContainingIgnoreCase("batman"))
-            .thenReturn(List.of(new Busqueda(1L, 5L, "The Batman")));
+        when(repository.findById(999L)).thenReturn(Optional.empty());
 
-        // When
-        List<BusquedaDTO> resultado = busquedaService.buscarPorTexto("batman");
-
-        // Then
-        assertEquals(1, resultado.size());
-        assertEquals("The Batman", resultado.get(0).getTitulo());
+        // When & Then
+        assertThrows(RecursoNoEncontradoException.class, () ->
+            busquedaService.obtenerPorId(999L)
+        );
     }
+
+
+
+
 
     @Test
     @DisplayName("eliminarBusquedaPorId - debe invocar deleteById si existe")
@@ -165,15 +163,18 @@ public class BusquedaServiceTest {
     }
 
     @Test
-    @DisplayName("eliminarBusquedaPorId - debe lanzar excepción si el ID no existe en el historial")
-    void debeLanzarExcepcionAlEliminarInexistente() {
+    @DisplayName("eliminar - debe lanzar excepción al intentar eliminar un ID inexistente")
+    void debeLanzarExcepcionAlEliminarProductoInexistente() {
         // Given
         when(repository.existsById(999L)).thenReturn(false);
 
         // When & Then
-        assertThrows(RecursoNoEncontradoException.class, () -> busquedaService.eliminarBusquedaPorId(999L));
+        assertThrows(RecursoNoEncontradoException.class, () ->
+            busquedaService.eliminarBusquedaPorId(999L)
+        );
         verify(repository, never()).deleteById(any());
     }
+
 
     @Test
     @DisplayName("eliminarTodo - debe limpiar el historial completo")

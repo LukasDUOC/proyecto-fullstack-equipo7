@@ -10,12 +10,12 @@ import java.util.List;
 public interface ContenidoClient {
 
     @GetMapping("/api/v1/contenido/{id}")
-    ContenidoDTO buscarPorId(@PathVariable Long id);
+    ContenidoDTO findById(@PathVariable Long id);
 
     @GetMapping("/api/v1/contenido")
-    List<ContenidoDTO> buscarTodos();
+    List<ContenidoDTO> findAll();
 
-    @GetMapping("/api/v1/contenido/buscar")
-    List<ContenidoDTO> buscarPorTitulo(@RequestParam("titulo") String titulo);
+    @GetMapping("/api/v1/contenido/buscar/{titulo}")
+    List<ContenidoDTO> buscarPorTitulo(@PathVariable String titulo);
     
 }
