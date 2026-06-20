@@ -35,12 +35,12 @@ public class ContenidoTest {
     }
 
 
+
     @Test
-    @DisplayName("Setters - debe permitir modificar cada campo individualmente")
+    @DisplayName("Setters y Getters - debe permitir modificar y recuperar cada campo individualmente")
     void gettersYSettersDebenAsignarYRecuperarCampos() {
         Contenido contenido = new Contenido();
 
-        
         contenido.setId(2L);
         contenido.setTitulo("Inception");
         contenido.setGenero("Ciencia Ficción");
@@ -50,7 +50,6 @@ public class ContenidoTest {
         contenido.setVisualizar("Netflix");
         contenido.setFechaLan(LocalDate.parse("2010-07-28"));
 
- 
         assertEquals(2L, contenido.getId());
         assertEquals("Inception", contenido.getTitulo());
         assertEquals("Ciencia Ficción", contenido.getGenero());
@@ -59,7 +58,6 @@ public class ContenidoTest {
         assertEquals("pelicula", contenido.getTipo());
         assertEquals("Netflix", contenido.getVisualizar());
         assertEquals(LocalDate.parse("2010-07-28"), contenido.getFechaLan());
-
     }
 
     

@@ -13,6 +13,7 @@ import cl.duoc.api_contenido.dto.ContenidoDTO;
 import cl.duoc.api_contenido.exception.RecursoNoEncontradoException;
 import cl.duoc.api_contenido.model.Contenido;
 import cl.duoc.api_contenido.repository.ContenidoRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
 public class ContenidoService {

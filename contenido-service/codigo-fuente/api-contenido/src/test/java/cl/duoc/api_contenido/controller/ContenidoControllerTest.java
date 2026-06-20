@@ -97,7 +97,6 @@ class ContenidoControllerTest {
                 LocalDate.parse("2010-07-28")
         );
 
-        // Configuramos el mock para que cuando busquen el ID 7, retorne nuestro DTO
         when(service.obtenerPorId(8L)).thenReturn(contenidoEsperado);
 
         // When & Then
@@ -162,7 +161,7 @@ class ContenidoControllerTest {
     @Test
     @DisplayName("POST - debe retornar 400 cuando el titulo está en blanco")
     void debeRetornar400CuandoTituloEstaVacio() throws Exception {
-        // Given — nombre vacío y precio negativo
+        // Given — titulo vacío 
         String json = """
             {
                     "titulo": "",

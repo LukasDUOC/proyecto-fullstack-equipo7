@@ -53,7 +53,7 @@ public class ContenidoController {
         description = "Retorna una Lista de los contenidos correspondiente al Id solicitado. ")
         @ApiResponses({
         @ApiResponse (responseCode = "200", description = "Contenido encontrado. "),
-        @ApiResponse (responseCode = "400", description = "Contenido NO encontrado. ")
+        @ApiResponse (responseCode = "404", description = "Contenido NO encontrado. ")
         })
     
     @GetMapping("/{id}")

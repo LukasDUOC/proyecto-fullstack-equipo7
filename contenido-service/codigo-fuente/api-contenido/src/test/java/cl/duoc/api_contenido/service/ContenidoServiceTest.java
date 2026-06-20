@@ -210,4 +210,59 @@ public class ContenidoServiceTest {
         verify(contenidoRepository, never()).deleteById(any());
     }
 
+    
+    @Test
+    @DisplayName("actualizar - debe modificar y retornar el contenido cuando el ID existe")
+    void debeActualizarContenidoCorrectamente() {
+        // Given
+        
+        
+        ContenidoCreateDTO contenidoDto = new ContenidoCreateDTO(
+                
+                "The Terminator ",
+                "Acción",
+                "Sinopsis actualizada del clásico cibernético",
+                "107 minutos",
+                "pelicula",
+                "Prime Video",
+                LocalDate.parse("1984-10-26"));
+
+        
+        Contenido contenido = new Contenido(
+            1L,
+                "The Terminator",
+                "Acción",
+                "Un asesino cibernético...",
+                "107 minutos",
+                "pelicula",
+                "Prime Video",
+                LocalDate.parse("1984-10-26"));
+
+        // contenido a sido modificado 
+        Contenido contenidoModificado = new Contenido(1L,
+                "The Terminator (Edición Especial)",
+                "Acción / Sci-Fi",
+                "Sinopsis actualizada del clásico cibernético",
+                "107 minutos",
+                "pelicula",
+                "Prime Video",
+                LocalDate.parse("1984-10-26"));
+
+        
+        when(contenidoRepository.findById(1L)).thenReturn(Optional.of(contenido));
+        when(contenidoRepository.save(any(Contenido.class))).thenReturn(contenidoModificado);
+
+        // When
+        ContenidoDTO resultado = contenidoService.actualizar(1L, contenidoDto);
+
+        // Then
+        assertNotNull(resultado);
+        assertEquals(1L, resultado.getId());
+        assertEquals("The Terminator (Edición Especial)", resultado.getTitulo());
+        assertEquals("Acción / Sci-Fi", resultado.getGenero());
+        
+        verify(contenidoRepository, times(1)).findById(1L);
+        verify(contenidoRepository, times(1)).save(any(Contenido.class));
+    }
+
 }
