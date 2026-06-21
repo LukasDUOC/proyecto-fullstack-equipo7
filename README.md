@@ -4,10 +4,10 @@
 
 | Servicio       | Encargado | Repositorio                                                                                |
 | :------------- | :-------- | :----------------------------------------------------------------------------------------- |
-| Usuario-Servic | lukas     | https://github.com/LukasDUOC/proyecto-fullstack-equipo7/tree/main/usuario-service          |
+| Usuario-Service | lukas     | https://github.com/LukasDUOC/proyecto-fullstack-equipo7/tree/main/usuario-service          |
 | Contenido-Service | franco    | https://github.com/LukasDUOC/proyecto-fullstack-equipo7/tree/main/contenido-service        |
 | Ratings-Service  | Nicolas   | https://github.com/LukasDUOC/proyecto-fullstack-equipo7/tree/main/ratings-service          |
-| Reseña-Servic  | Nicolas   | https://github.com/LukasDUOC/proyecto-fullstack-equipo7/tree/main/rese%C3%B1as-service     |
+| Reseña-Service  | Nicolas   | https://github.com/LukasDUOC/proyecto-fullstack-equipo7/tree/main/rese%C3%B1as-service     |
 | Favorito-Service | Lukas     | https://github.com/LukasDUOC/proyecto-fullstack-equipo7/tree/main/favorito-service         |
 | Recomendacion-Service | Lukas     | https://github.com/LukasDUOC/proyecto-fullstack-equipo7/tree/main/recomendaciones-service  |
 | Lista-Service  | Franco    | https://github.com/LukasDUOC/proyecto-fullstack-equipo7/tree/main/lista-service            |
