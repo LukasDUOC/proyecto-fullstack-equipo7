@@ -5,6 +5,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     
      @ExceptionHandler(RecursoNoEncontradoException.class)
