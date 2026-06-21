@@ -1,11 +1,16 @@
 package cl.duoc.api_contenido.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post; 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import org.springframework.http.MediaType; 
 
 import java.time.LocalDate;
@@ -179,6 +184,56 @@ class ContenidoControllerTest {
                .contentType(MediaType.APPLICATION_JSON)
                .content(json))
                .andExpect(status().isBadRequest());
+    }
+
+     @Test
+    @DisplayName("PUT /api/v1/contenido/{id} - debe retornar 200 al actualizar un contenido existente")
+    void debeRetornar200AlActualizarContenido() throws Exception {
+        // Given
+        String json = """
+                {
+                    "titulo": "Inception Actualizado",
+                    "genero": "Ciencia Ficción",
+                    "sinopsis": "Sinopsis nueva...",
+                    "duracion": "148 minutos",
+                    "tipo": "pelicula",
+                    "visualizar": "Netflix",
+                    "fechaLan": "2010-07-28"
+                }
+                """;
+
+        ContenidoDTO dtoActualizado = new ContenidoDTO(
+                1L,
+                "Inception Actualizado",
+                "Ciencia Ficción",
+                "Sinopsis nueva...",
+                "148 minutos",
+                "pelicula",
+                "Netflix",
+                LocalDate.parse("2010-07-28")
+        );
+
+        when(service.actualizar(eq(1L), any())).thenReturn(dtoActualizado);
+
+        // When & Then
+        mockMvc.perform(put("/api/v1/contenido/" + 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.titulo").value("Inception Actualizado"));
+    }
+
+     @Test
+    @DisplayName("DELETE /api/v1/contenido/{id} - debe retornar 24 No Content al eliminar un contenido existente")
+    void debeRetornar24AlEliminarContenido() throws Exception {
+        // Given
+        Long idExistente = 1L;
+        doNothing().when(service).eliminar(idExistente);
+
+        // When & Then
+        mockMvc.perform(delete("/api/v1/contenido/" + idExistente))
+                .andExpect(status().isNoContent());
     }
 
 }

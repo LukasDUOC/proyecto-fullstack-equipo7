@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: CONTENIDO-SERVICE
+
+  datasource:
+    url: jdbc:mysql://db-servicio:3306/universidad_backend
+    username: desarrollador
+    password: password_seguro_123
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+eureka:
+  client:
+    service-url:
+      # Apunta a la IP Pública de la OTRA instancia (la de Infraestructura) donde corre Eureka
+      defaultZone: http://34.196.166.245:8761/eureka/
+  instance:
+    # OBLIGATORIO: Al estar en máquinas separadas, debe registrarse usando su IP pública de AWS
+    # para que el Gateway pueda redirigirle tráfico de forma externa.
+    prefer-ip-address: true
+
+    ip-address: 172.31.29.37
