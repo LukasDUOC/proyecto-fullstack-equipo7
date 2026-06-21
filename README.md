@@ -82,4 +82,58 @@
 - **Riesgo identificado**: La API funciona al 100%, pero como faltan algunos tests para los flujos de error al eliminar, cualquier cambio futuro en las reglas o datos podría hacer que el sistema falle de forma oculta sin que las pruebas actuales lo detecten.
 - **Acción futura**: Agregar los tests que faltan para las búsquedas por palabras, los casos de error al eliminar contenidos.
 
+## Plan de Pruebas Unitarias — API Usuarios
+
+### Reglas de Negocio Críticas
+
+1. **Integridad del Modelo (Model)**: Toda instancia de `Usuario` debe resguardar la consistencia de sus atributos en constructores y mutadores, asegurando la correspondencia lógica en métodos de igualdad y texto (`hashCode` y `toString`).
+2. **Ciclo de Persistencia Segura (Repository)**: La base de datos debe autogenerar IDs incrementales al registrar nuevos elementos y responder de forma controlada con contenedores vacíos (`Optional.empty()`) o booleanos ante consultas de identificadores o emails inexistentes.
+3. **Validación de Unicidad (Service)**: No se puede registrar un nuevo usuario si la validación detecta que el correo electrónico (`email`) exacto ya se encuentra ingresado en el sistema.
+4. **Control de Existencia (Service)**: Cualquier operación de consulta individual (`findById`, `findByEmail`) o eliminación (`eliminarPorEmail`) sobre un identificador que no existe en el sistema debe abortar de inmediato lanzando la excepción `RecursoNoEncontradoException`.
+5. **Validación del Contrato HTTP (Controller)**: Los endpoints expuestos por la API deben responder con códigos semánticos estándar (200 OK, 201 Created, 204 No Content). Las solicitudes que violen las restricciones de validación (como enviar un email inválido o nombre vacío) deben ser rechazadas con un error 400 Bad Request.
+6. **Gestión Identificada por Email (Repository/Service/Controller)**: El sistema debe permitir la consulta y eliminación de elementos específicos utilizando el correo electrónico (`email`) mediante funciones como `findByEmail` y `deleteByEmail`.
+
+### Cobertura Actual Usuario Test.
+
+| Regla | Estado | Casos Cubiertos | Pendiente |
+|-------|--------|-----------------|-----------|
+| 1. Integridad del Modelo | ✅ Cubierta | Constructor vacío, constructor completo, Getters/Setters, verificación de Hash y formato `toString`. | — |
+| 2. Ciclo de Persistencia | ✅ Cubierta | Guardado con ID autoincremental, comprobación de existencia por email, búsqueda feliz por email, retorno vacío por email inexistente y borrado exitoso en BD. | — |
+| 3. Validación de Unicidad | ⚠️ Parcial | El repositorio detecta correos existentes (`existsByEmail`). | Falta bloqueo con excepción por email duplicado (caso de error) en la creación desde el servicio. |
+| 4. Control de Existencia | ⚠️ Parcial | Búsqueda por ID existente (caso feliz) y manejo de excepción si el ID no existe en el sistema (caso error). | Falta email inexistente para el método de búsqueda y eliminación (`eliminarPorEmail`) en el servicio. |
+| 5. Metodos HTTP | ⚠️ Parcial | Listados masivos, consultas por ID (404) y Email (200), creación (201), rechazo por campos inválidos (400) y flujos felices de eliminación (DELETE). | Casos de error (404) para eliminación de email inexistente y faltan **todos** los flujos de actualización (PUT). |
+
+### Reflexión y Deuda Técnica
+
+- **Riesgo identificado**: Riesgo identificado: La API funciona correctamente en sus flujos base, pero como faltan tests para la validación de correos duplicados al crear y todos los flujos de error/actualización (PUT), cualquier cambio futuro podría generar duplicidad de usuarios o que el sistema falle de forma oculta sin que las pruebas lo detecten.
+  
+- **Acción futura**: Agregar los tests que faltan para el bloqueo por email duplicado, la actualización completa de datos (PUT) y los casos de error al modificar o eliminar usuarios que no existen.
+
+
+## Plan de Pruebas Unitarias — API Favoritos
+
+### Reglas de Negocio Críticas
+
+1. **Integridad del Modelo (Model)**: Toda instancia de `Favorito` debe resguardar la consistencia de sus atributos en constructores y mutadores, asegurando la correspondencia lógica en métodos de igualdad y texto (`hashCode` y `toString`).
+2. **Ciclo de Persistencia Segura (Repository)**: La base de datos debe autogenerar IDs incrementales al registrar nuevos elementos y responder de forma controlada con contenedores vacíos (`Optional.empty()`) ante consultas de identificadores inexistentes.
+3. **Validación de Relaciones Externas (Service)**: Al crear un favorito, el sistema debe interactuar con clientes externos (`UsuarioClient` y `ContenidoClient`) para gestionar la relación entre un usuario y un contenido.
+4. **Control de Existencia (Service)**: Cualquier operación de consulta individual (`findById`) o de modificación de estado (`actualizarEstado`) sobre un identificador que no existe en el sistema debe abortar de inmediato lanzando la excepción `RecursoNoEncontradoException`.
+5. **Validación del Contrato HTTP (Controller)**: Los endpoints expuestos por la API deben responder con códigos semánticos estándar (200 OK, 201 Created). Los flujos de error por recursos no encontrados deben retornar 404 Not Found gestionados por su handler.
+6. **Actualización Parcial de Estado (Service/Controller)**: El sistema debe permitir modificar exclusivamente el estado de favorito (booleano) a través del verbo HTTP `PATCH`, asegurando la inmutabilidad de los identificadores de usuario y contenido.
+
+### Cobertura Actual Favorito Test.
+
+| Regla | Estado | Casos Cubiertos | Pendiente |
+|-------|--------|-----------------|-----------|
+| 1. Integridad del Modelo | ✅ Cubierta | Constructor vacío, constructor completo, Getters/Setters, verificación de Hash y formato `toString`. | — |
+| 2. Ciclo de Persistencia | ✅ Cubierta | Guardado con ID autoincremental, listado total, búsqueda feliz por ID, ID inexistente y borrado exitoso en BD. | — |
+| 3. Validación de Relaciones | ⚠️ Parcial | Creación exitosa probada en el servicio simulando llamadas a los clientes (`UsuarioClient` y `ContenidoClient`). | Faltan flujos de error simulando que el usuario o el contenido no existen en los otros microservicios. |
+| 4. Control de Existencia | ⚠️ Parcial | Búsqueda por ID y actualización de estado (PATCH) con casos felices, además del manejo de excepción si el ID no existe en el sistema (caso error). | Falta el método y prueba de eliminación (`eliminar`) en el servicio para IDs inexistentes. |
+| 5. Metodos HTTP | ⚠️ Parcial | Listados masivos, creación (201), actualización de estado (PATCH 200) y rechazo por ID no encontrado (404 en GET). | Casos de éxito (200) en consulta por ID individual, rechazo por campos vacíos (400 Bad Request), casos 404 para el PATCH, y todos los tests para eliminación (DELETE). |
+
+### Reflexión y Deuda Técnica
+
+- **Riesgo identificado**: Riesgo identificado: La API funciona correctamente para lecturas y actualizaciones parciales, pero al mockear respuestas nulas en los clientes externos durante la creación, se ocultan posibles fallos de integración. Además, al faltar las pruebas de eliminación (DELETE) y validaciones de formato (400 Bad Request), la API podría fallar silenciosamente o aceptar datos corruptos.
+  
+- **Acción futura**: Agregar los tests que faltan para validaciones de DTO (Bad Request), simular fallos controlados en los clientes externos (`ContenidoClient` y `UsuarioClient`) y construir la cobertura completa para el flujo de eliminación (DELETE) en capas de Servicio y Controlador.
 
