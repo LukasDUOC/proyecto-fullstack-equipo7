@@ -21,3 +21,4 @@
 | Swagger Contenido | `http://54.208.91.193:8081/doc/swagger-ui/index.html` |
 | Swagger Busqueda | `http://54.208.91.193:8086/doc/swagger-ui/index.html` |
 | Swagger Lista | `http://54.208.91.193:8089/doc/swagger-ui/index.html` |
+| Swagger Tendencia | `http://54.208.91.193:8088/doc/swagger-ui/index.html` |
