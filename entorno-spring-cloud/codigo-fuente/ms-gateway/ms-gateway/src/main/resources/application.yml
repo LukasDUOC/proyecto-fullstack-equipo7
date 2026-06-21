@@ -1,0 +1,42 @@
+server:
+  port: 8080                   # Puerto público del Gateway
+
+spring:
+  application:
+    name: ms-gateway
+  cloud:
+    gateway:
+      routes:                   # Lista de reglas de enrutamiento
+
+# ────────────────────────────── Ruta para tu API de Contenidos ────────────────────────────
+        - id: contenido-route
+          uri: lb://CONTENIDO-SERVICE  # Busca dinámicamente en Eureka usando el nombre exacto
+          predicates:
+            - Path=/api/v1/contenido/**  # Captura la URL de tu API
+
+# ─ ───────────────────────────── Ruta para tu API de Usuario ────────────────────────────
+        - id: usuario-route
+          uri: lb://USUARIO-SERVICE # Busca dinámicamente en Eureka usando el nombre exacto
+          predicates:
+            - Path=/api/v1/usuarios/**  # Captura la URL de tu API
+
+# ─ ───────────────────────────── Ruta para tu API de Ratings ────────────────────────────
+        - id: ratings-route
+          uri: lb://RATINGS-SERVICE  # Busca dinámicamente en Eureka usando el nombre exacto
+          predicates:
+            - Path=/api/v1/ratings/**  # Captura la URL de tu API
+            
+# ─ ───────────────────────────── Ruta para tu API de Busqueda ────────────────────────────
+        - id: busqueda-route
+          uri: lb://BUSQUEDA-SERVICE # Busca dinámicamente en Eureka usando el nombre exacto
+          predicates:
+            - Path=/api/v1/busqueda/**  # Captura la URL de tu API
+eureka:
+  client:
+    service-url:
+      # Como el Gateway y Eureka corren en esta misma máquina, dejas localhost
+      defaultZone: http://localhost:8761/eureka/
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG  # Útil para depurar rutas en la consola

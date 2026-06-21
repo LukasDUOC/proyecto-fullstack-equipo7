@@ -1,0 +1,16 @@
+server:
+  port: 8761               # Puerto estándar de Eureka
+  address: 0.0.0.0         # Permite conexiones desde cualquier otra IP/Instancia
+
+spring:
+  application:
+    name: ms-eureka
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false  # El servidor NO se registra en sí mismo
+    fetch-registry: false         # El servidor NO busca un registro externo
+  server:
+    wait-time-in-ms-when-sync-empty: 0
