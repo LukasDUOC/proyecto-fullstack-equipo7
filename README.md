@@ -22,6 +22,9 @@
 | Swagger Busqueda | `http://54.208.91.193:8086/doc/swagger-ui/index.html` |
 | Swagger Lista | `http://54.208.91.193:8089/doc/swagger-ui/index.html` |
 | Swagger Tendencia | `http://54.208.91.193:8088/doc/swagger-ui/index.html` |
+| Swagger Usuario | `http://54.208.91.193:8090/doc/swagger-ui/index.html` |
+| Swagger Favoritos | `http://54.208.91.193:8084/doc/swagger-ui/index.html` |
+| Swagger Recomendaciones | `http://54.208.91.193:8085/doc/swagger-ui/index.html` |
 
 ## Plan de Pruebas Unitarias — API Contenidos
 
