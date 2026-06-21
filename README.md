@@ -48,7 +48,7 @@
 
 ### Reflexión y Deuda Técnica
 
-- **Riesgo identificado**: La API Contenido se encuentra 100% operativo, estable y funcional en todas sus capas CRUD, pero al tener algunos métodos, endpoints de actualización (`PUT`) y de eliminación (`DELETE`) que operan de manera correcta pero que no han sido incluidos en los tests. Como faltan algunos casos de prueba para los flujos de error, si en el futuro modificamos cómo se transforman los datos o las reglas que validan los campos, la API podría empezar a fallar de forma oculta sin que los tests actuales lo detecten.
+- **Riesgo identificado**: Riesgo identificado: La API funciona al 100%, pero como faltan algunos tests para los flujos de error al modificar o eliminar, cualquier cambio futuro en las reglas o datos podría hacer que el sistema falle de forma oculta sin que las pruebas actuales lo detecten.
   
--**Acción futura**: Agregar los tests que faltan para las búsquedas por palabras, la actualización de datos y los casos de error al modificar o eliminar contenidos.
+- **Acción futura**: Agregar los tests que faltan para las búsquedas por palabras, la actualización de datos y los casos de error al modificar o eliminar contenidos.
 
